@@ -1,5 +1,5 @@
 import numpy as np
-from Board.board import SudokuBoard
+from Board.board import SudokuBoard, remove_possibles
 
 
 def create_a_puzzle():
@@ -77,33 +77,98 @@ class SudokuSolver:
             self.unique_candidate_helper(square, box_squares)
 
     def block_column_interaction_helper(self, box):
-        box = np.array(box).reshape((3,3)).tolist()
+        box = np.array(box).reshape((3,3))
 
-        options = set([1,2,3])
+        options = set(range(3))
 
+        for index in range(3):
+            diff_indexes = options.difference([index])
 
-        for current_index in range(3):
-            current_col_set = set()
-            for square in box[:,current_index]:
-                current_col_set = current_col_set.union(square.possibles)
+            # Get the other columns possible sets
+            diff_squares = box[:,list(diff_indexes)].flatten()
+            diff_possibles = set()
+            [diff_possibles.update(x.possibles) for x in diff_squares]
 
-            other_cols_set = set()
-            for other_index in options.difference(current_index):
-                for square in box[:,other_index]:
-                    other_cols_set = other_cols_set.union(square.possibles)
+            # Get this columns possible set
+            squares = box[:,index].flatten()
+            possibles = set()
+            [possibles.update(x.possibles) for x in squares]
 
-            for diff_value in current_col_set.difference(other_cols_set):
+            # Check if there is a value in this box column not in the others
+            difference = possibles.difference(diff_possibles)
+            if len(difference) != 0:
+                col_index = squares[0].index[1]
 
-
-
-
-            for other
-
-            c_col =
-
-
+                # For each value only possible in this col remove from the other cols
+                for value in difference:
+                    col_squares = self.board.colSquares(col_index)
+                    remove_possibles(col_squares, value, squares)
 
     def block_column_interaction(self):
         all_boxes = self.board.get_boxes()
         for box in all_boxes:
             self.block_column_interaction_helper(box)
+
+    def block_row_interaction_helper(self, box):
+        box = np.array(box).reshape((3,3))
+
+        options = set(range(3))
+
+        for index in range(3):
+            diff_indexes = options.difference([index])
+
+            # Get the other columns possible sets
+            diff_squares = box[list(diff_indexes)].flatten()
+            diff_possibles = set()
+            [diff_possibles.update(x.possibles) for x in diff_squares]
+
+            # Get this columns possible set
+            squares = box[index,:].flatten()
+            possibles = set()
+            [possibles.update(x.possibles) for x in squares]
+
+            # Check if there is a value in this box column not in the others
+            difference = possibles.difference(diff_possibles)
+            if len(difference) != 0:
+                row_index = squares[0].index[0]
+
+                # For each value only possible in this col remove from the other cols
+                for value in difference:
+                    row_squares = self.board.rowSquares(row_index)
+                    remove_possibles(row_squares, value, squares)
+
+    def block_row_interaction(self):
+        all_boxes = self.board.get_boxes()
+        for box in all_boxes:
+            self.block_row_interaction_helper(box)
+
+    def block_block_col_helper(self, box_0, box_1):
+
+        options = set(range(3))
+
+        for col in range(3):
+            comp_cols = options.difference([col])
+            diff_squares =
+
+
+    def block_block_row_helper(self, box_0, box_1):
+
+
+    def block_block_interaction_helper(self, box_0, box_1):
+        box_0 = np.array(box_0).reshape((3,3))
+        box_1 = np.array(box_1).reshape((3, 3))
+
+        # If these boxes are in the same row
+        if box_0[0][0].index[0] != box_1[0][0].index[0]:
+            self.block_block_row_helper(box_0, box_1)
+
+        # If these boxes are in the same column
+        if box_0[0][0].index[1] != box_1[0][0].index[1]:
+            self.block_block_col_helper(box_0, box_1)
+
+
+    def block_block_interaction(self):
+        all_boxes = self.board.get_boxes()
+        for box_0 in all_boxes:
+            for box_1 in all_boxes:
+                self.block_block_interaction_helper(box_0, box_1)

@@ -1,9 +1,13 @@
 from math import *
 import numpy as np
 
-def get_sub_cols(sub_box, indexes):
+def remove_possibles(remove_from, value, ignore=None):
+    if ignore == None:
+        ignore = set()
 
-
+    for square in remove_from:
+        if square not in ignore:
+            square.removePossible(value)
 
 class SudokuBoard:
 
@@ -53,14 +57,9 @@ class SudokuBoard:
         :param col: index of col
         :return: list of squares with there indices matching the box above
         """
-        squares = []
-        box_base_row = (row // 3) * 3
-        box_base_col = (col // 3) * 3
-        for i in range(9):
-            row_index = i // 3 + box_base_row
-            col_index = i % 3 + box_base_col
-
-            squares.append(self.board[row_index][col_index])
+        row_base = (row // 3) * 3
+        col_base = (col // 3) * 3
+        squares = self.board[row_base:row_base+3, col_base:col_base+3]
 
         return squares
 
@@ -100,10 +99,9 @@ class SudokuBoard:
         associated_squares.extend(col)
 
         box = self.boxSquares(row_index, col_index)
-        associated_squares.extend(box)
+        associated_squares.extend(box.flatten())
 
         return associated_squares
-
 
 class SudokuSquare:
 

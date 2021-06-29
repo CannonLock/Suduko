@@ -195,3 +195,35 @@ class Test_Sudoku_Solver_Unique_Candidate(unittest.TestCase):
         solver.sole_candidate() # Have to run this first to narrow down the possibles
         solver.unique_candidate()
         self.assertEqual(4, solver.board[2][0].getValue())
+
+class Test_Sudoku_Solver_Block_Column_Interaction(unittest.TestCase):
+
+    def test_custom_1(self):
+        solver = SudokuSolver("./test_puzzles/test_block_column_interaction_custom_1.npy")
+        solver.sole_candidate()  # Have to run this first to narrow down the possibles
+        solver.block_row_interaction()
+        possibles = solver.board[4][1].possibles
+        self.assertTrue(7 not in possibles)
+
+    def test_custom_2(self):
+        solver = SudokuSolver("./test_puzzles/test_block_column_interaction_custom_1.npy")
+        solver.sole_candidate()  # Have to run this first to narrow down the possibles
+        solver.block_row_interaction()
+        possibles = solver.board[4][5].possibles
+        self.assertTrue(7 in possibles)
+
+class Test_Sudoku_Solver_Block_Row_Interaction(unittest.TestCase):
+
+    def test_custom_1(self):
+        solver = SudokuSolver("./test_puzzles/test_block_row_interaction_custom_1.npy")
+        solver.sole_candidate()  # Have to run this first to narrow down the possibles
+        solver.block_column_interaction()
+        possibles = solver.board[1][4].possibles
+        self.assertTrue(7 not in possibles)
+
+    def test_custom_2(self):
+        solver = SudokuSolver("./test_puzzles/test_block_row_interaction_custom_1.npy")
+        solver.sole_candidate()  # Have to run this first to narrow down the possibles
+        solver.block_column_interaction()
+        possibles = solver.board[5][4].possibles
+        self.assertTrue(7 in possibles)
